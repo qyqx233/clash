@@ -76,6 +76,13 @@ type DelayHistory struct {
 	Delay uint16    `json:"delay"`
 }
 
+type Statistics struct {
+	Failed int
+	MaxFailed int
+}
+
+type StatisticsFunc func (s *Statistics)
+
 type Proxy interface {
 	ProxyAdapter
 	Alive() bool
@@ -83,6 +90,8 @@ type Proxy interface {
 	Dial(metadata *Metadata) (Conn, error)
 	LastDelay() uint16
 	URLTest(ctx context.Context, url string) (uint16, error)
+	GetStatistics() *Statistics
+	SetStatistics(StatisticsFunc)
 }
 
 // AdapterType is enum of adapter type

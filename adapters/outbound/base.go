@@ -100,6 +100,15 @@ type Proxy struct {
 	C.ProxyAdapter
 	history *queue.Queue
 	alive   bool
+	s C.Statistics
+}
+
+func (p *Proxy) GetStatistics() *C.Statistics {
+	return &p.s
+}
+
+func (p *Proxy) SetStatistics(f C.StatisticsFunc) {
+	f(&p.s)
 }
 
 func (p *Proxy) Alive() bool {
@@ -219,5 +228,5 @@ func (p *Proxy) URLTest(ctx context.Context, url string) (t uint16, err error) {
 }
 
 func NewProxy(adapter C.ProxyAdapter) *Proxy {
-	return &Proxy{adapter, queue.New(10), true}
+	return &Proxy{adapter, queue.New(10), true, C.Statistics{}}
 }

@@ -47,6 +47,7 @@ func (u *URLTest) proxies() []C.Proxy {
 }
 
 func (u *URLTest) fast() C.Proxy {
+	//log.Infoln("fast check") // add log
 	elm, _, _ := u.fastSingle.Do(func() (interface{}, error) {
 		proxies := u.proxies()
 		fast := proxies[0]
@@ -55,7 +56,12 @@ func (u *URLTest) fast() C.Proxy {
 			if !proxy.Alive() {
 				continue
 			}
-
+			// add log begin
+			statistics := proxy.GetStatistics()
+			if statistics.Failed > 0 {
+				statistics.Failed -= 1
+				continue
+			}
 			delay := proxy.LastDelay()
 			if delay < min {
 				fast = proxy
