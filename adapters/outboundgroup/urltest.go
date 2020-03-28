@@ -47,30 +47,36 @@ func (u *URLTest) proxies() []C.Proxy {
 }
 
 func (u *URLTest) fast() C.Proxy {
-	//log.Infoln("fast check") // add log
+	// modified by qyqx233
 	elm, _, _ := u.fastSingle.Do(func() (interface{}, error) {
 		proxies := u.proxies()
-		fast := proxies[0]
-		min := fast.LastDelay()
-		for _, proxy := range proxies[1:] {
+		var fast C.Proxy
+		var min uint16
+		for _, proxy := range proxies {
 			if !proxy.Alive() {
 				continue
 			}
-			// add log begin
 			statistics := proxy.GetStatistics()
 			if statistics.Failed > 0 {
 				statistics.Failed -= 1
 				continue
 			}
 			delay := proxy.LastDelay()
-			if delay < min {
+			if fast == nil {
 				fast = proxy
 				min = delay
+			} else {
+				if delay < min {
+					fast = proxy
+					min = delay
+				}
 			}
+		}
+		if fast == nil {
+			return proxies[0], nil
 		}
 		return fast, nil
 	})
-
 	return elm.(C.Proxy)
 }
 

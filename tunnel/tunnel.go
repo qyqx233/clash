@@ -273,11 +273,9 @@ func handleTCPConn(localConn C.ServerAdapter) {
 
 	remoteConn, err := proxy.Dial(metadata)
 	if err != nil {
-		//proxy.SetStatistics(&C.Statistics{1})
 		s := err.Error()
 		if strings.Index(s, "403 Forbidden") >= 0 || strings.Index(s, "i/o timeout") >= 0 {
 			proxy.SetStatistics(func (s *C.Statistics) {
-				log.Infoln("set failed+=1")
 				if s.Failed == 0 {
 					if s.MaxFailed == 0 {
 						if s.MaxFailed == 0 {
@@ -291,7 +289,6 @@ func handleTCPConn(localConn C.ServerAdapter) {
 				} else {
 					s.Failed += 1
 					s.MaxFailed = libs.MaxInt(s.Failed, s.MaxFailed)
-					log.Infoln("%d %d", s.Failed, s.MaxFailed) // add log
 				}
 
 			})
